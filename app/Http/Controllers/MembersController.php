@@ -12,7 +12,11 @@ class MembersController extends Controller
      */
     public function index()
     {
-        //
+        $members = members::query();
+        return view('pages/members', [
+            "members" => $members
+        ]);
+        
     }
 
     /**

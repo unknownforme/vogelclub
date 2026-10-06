@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
+            $table->unsignedBigInteger('price'); //is in ct to avoid floating point errors
             $table->timestamps();
         });
     }

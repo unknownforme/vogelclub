@@ -5,34 +5,41 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
+                    <a href="{{ route('home') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                <x-nav-link class="!text-gray-900 !hover:text-gray-700 transition" :href="route('home')"
-                        :active="request()->routeIs('home')">
+                <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
                         {{ __('home') }}
                     </x-nav-link>
                     @isset(Auth::user()->name)
-                        <x-nav-link class="!text-gray-900 !hover:text-gray-700 transition" :href="route('history.index')"
-                            :active="request()->routeIs('history')">
-                            {{ __('history') }}
+                        <x-nav-link  :href="route('members')"
+                            :active="request()->routeIs('members')">
+                            {{ __('members') }}
+                        
                         </x-nav-link>
-                        <x-nav-link class="!text-gray-900 !hover:text-gray-700 transition" :href="route('cells.index')"
+                        {{-- <x-nav-link  :href="route('cells.index')"
                             :active="request()->routeIs('cells')">
                             {{ __('cells') }}
                         </x-nav-link>
-                        <x-nav-link class="!text-gray-900 !hover:text-gray-700 transition" :href="route('inmates.index')"
+                        <x-nav-link  :href="route('inmates.index')"
                             :active="request()->routeIs('gevangenen')">
                             {{ __('gevangenen') }}
-                        </x-nav-link>
+                        </x-nav-link> --}}
                     @endisset
+
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    
+                    @if(null === Auth::user())
+                        <x-nav-link :href="route('login')" :active="request()->routeIs('login')">
+                            {{ __('login') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -119,6 +126,5 @@
                 </div>
             </div>
         @endisset
-
     </div>
 </nav>
