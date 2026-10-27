@@ -12,23 +12,23 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
-                        {{ __('home') }}
+                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
+                        {{ __('Home') }}
                     </x-nav-link>
+
                     @isset(Auth::user()->name)
-                        <x-nav-link  :href="route('members')"
-                            :active="request()->routeIs('members')">
-                            {{ __('members') }}
-                        
+                        <x-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')">
+                            {{ __('Leden') }}
                         </x-nav-link>
-                        {{-- <x-nav-link  :href="route('cells.index')"
-                            :active="request()->routeIs('cells')">
-                            {{ __('cells') }}
+                        <x-nav-link :href="route('member_types.index')" :active="request()->routeIs('member_types.*')">
+                            {{ __('Lidsoorten') }}
                         </x-nav-link>
-                        <x-nav-link  :href="route('inmates.index')"
-                            :active="request()->routeIs('gevangenen')">
-                            {{ __('gevangenen') }}
-                        </x-nav-link> --}}
+                        <x-nav-link :href="route('breeding_numbers.index')" :active="request()->routeIs('breeding_numbers.*')">
+                            {{ __('Kweeknummers') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('invoices.index')" :active="request()->routeIs('invoices.*')">
+                            {{ __('Facturen') }}
+                        </x-nav-link>
                     @endisset
 
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
@@ -37,7 +37,7 @@
                     
                     @if(null === Auth::user())
                         <x-nav-link :href="route('login')" :active="request()->routeIs('login')">
-                            {{ __('login') }}
+                            {{ __('Login') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -97,11 +97,25 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+
+            @isset(Auth::user()->name)
+                <x-responsive-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')">
+                    {{ __('Leden') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('member_types.index')" :active="request()->routeIs('member_types.*')">
+                    {{ __('Lidsoorten') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('breeding_numbers.index')" :active="request()->routeIs('breeding_numbers.*')">
+                    {{ __('Kweeknummers') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('invoices.index')" :active="request()->routeIs('invoices.*')">
+                    {{ __('Facturen') }}
+                </x-responsive-nav-link>
+            @endisset
         </div>
 
         <!-- Responsive Settings Options -->
         @isset(Auth::user()->name)
-
             <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
                 <div class="px-4">
                     <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>

@@ -2,64 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\breeding_number;
+use App\Models\BreedingNumber;
+use App\Models\Member;
 use Illuminate\Http\Request;
 
 class BreedingNumberController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $breedingNumbers = BreedingNumber::with('member')->paginate(20);
+        return view('breeding_numbers.index', compact('breedingNumbers'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $members = Member::where('is_active', true)->orderBy('last_name')->get();
+        return view('breeding_numbers.create', compact('members'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'breeding_number' => 'required|string|max:255',
+            'member_id' => 'required|exists:members,id',
+        ]);
+
+        BreedingNumber::create($validated);
+
+        return redirect()->route('breeding_numbers.index')->with('success', 'Kweeknummer geregistreerd.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(breeding_number $breeding_number)
+    public function show(BreedingNumber $breedingNumber)
     {
-        //
+        $breedingNumber->load('member');
+        return view('breeding_numbers.show', compact('breedingNumber'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(breeding_number $breeding_number)
+    public function edit(BreedingNumber $breedingNumber)
     {
-        //
+        $members = Member::where('is_active', true)->orderBy('last_name')->get();
+        return view('breeding_numbers.edit', compact('breedingNumber', 'members'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, breeding_number $breeding_number)
+    public function update(Request $request, BreedingNumber $breedingNumber)
     {
-        //
+        $validated = $request->validate([
+            'breeding_number' => 'required|string|max:255',
+            'member_id' => 'required|exists:members,id',
+        ]);
+
+        $breedingNumber->update($validated);
+
+        return redirect()->route('breeding_numbers.index')->with('success', 'Kweeknummer bijgewerkt.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(breeding_number $breeding_number)
+    public function destroy(BreedingNumber $breedingNumber)
     {
-        //
+        $breedingNumber->delete();
+        return redirect()->route('breeding_numbers.index')->with('success', 'Kweeknummer verwijderd.');
     }
 }

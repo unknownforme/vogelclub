@@ -2,64 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\member_types;
+use App\Models\MemberType;
 use Illuminate\Http\Request;
 
 class MemberTypesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $memberTypes = MemberType::orderBy('name')->get();
+        return view('member_types.index', compact('memberTypes'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('member_types.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'announced_price' => 'nullable|numeric',
+        ]);
+
+        MemberType::create($validated);
+
+        return redirect()->route('member_types.index')->with('success', 'Lidsoort toegevoegd.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(member_types $member_types)
+    public function show(MemberType $memberType)
     {
-        //
+        return view('member_types.show', compact('memberType'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(member_types $member_types)
+    public function edit(MemberType $memberType)
     {
-        //
+        return view('member_types.edit', compact('memberType'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, member_types $member_types)
+    public function update(Request $request, MemberType $memberType)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'announced_price' => 'nullable|numeric',
+        ]);
+
+        $memberType->update($validated);
+
+        return redirect()->route('member_types.index')->with('success', 'Lidsoort bijgewerkt.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(member_types $member_types)
+    public function destroy(MemberType $memberType)
     {
-        //
+        $memberType->delete();
+        return redirect()->route('member_types.index')->with('success', 'Lidsoort verwijderd.');
     }
 }

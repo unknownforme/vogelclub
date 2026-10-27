@@ -2,288 +2,128 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Members;
-use App\Models\Member_types;
-use App\Models\Addresses;
+use App\Models\Member;
+use App\Models\MemberType;
+use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class MembersController extends Controller
 {
-    /**
-     * Display an overview of all members.
-     */
     public function index(Request $request)
     {
-        $query = Members::with([
-            'memberTypes',
-            'Addresses',
-            'breedingNumbers',
-        ]);
+        $query = Member::with(['memberType', 'address', 'breedingNumbers']);
 
-        // Search by first name or last name
         if ($request->filled('name')) {
             $name = $request->input('name');
-
-            $query->where(function ($query) use ($name) {
-                $query->where('first_name', 'like', "%{$name}%")
-                    ->orWhere('last_name', 'like', "%{$name}%");
+            $query->where(function ($q) use ($name) {
+                $q->where('first_name', 'like', "%{$name}%")->orWhere('last_name', 'like', "%{$name}%");
             });
         }
 
-        // Filter by member type
         if ($request->filled('member_type_id')) {
-            $query->where(
-                'member_type_id',
-                $request->input('member_type_id')
-            );
+            $query->where('member_type_id', $request->input('member_type_id'));
         }
 
-        // Filter by active status
         if ($request->filled('is_active')) {
-            $query->where(
-                'is_active',
-                $request->input('is_active')
-            );
+            $query->where('is_active', $request->input('is_active'));
         }
 
-        // Search by breeding number
         if ($request->filled('breeding_number')) {
-            $breedingNumber = $request->input('breeding_number');
-
-            $query->whereHas('breedingNumbers', function ($query) use ($breedingNumber) {
-                $query->where(
-                    'breeding_number',
-                    'like',
-                    "%{$breedingNumber}%"
-                );
+            $bn = $request->input('breeding_number');
+            $query->whereHas('breedingNumbers', function ($q) use ($bn) {
+                $q->where('breeding_number', 'like', "%{$bn}%");
             });
         }
 
-        $members = $query
-            ->orderBy('last_name')
-            ->orderBy('first_name')
-            ->paginate(20)
-            ->withQueryString();
+        $members = $query->orderBy('last_name')->orderBy('first_name')->paginate(20)->withQueryString();
+        $memberTypes = MemberType::orderBy('name')->get();
 
-        $memberTypes = member_types::orderBy('name')->get();
-
-        return view('members.index', compact(
-            'members',
-            'memberTypes'
-        ));
+        return view('members.index', compact('members', 'memberTypes'));
     }
 
-    /**
-     * Show the form for creating a new member.
-     */
     public function create()
     {
-        $memberTypes = member_types::orderBy('name')->get();
-
+        $memberTypes = MemberType::orderBy('name')->get();
         return view('members.create', compact('memberTypes'));
     }
 
-    /**
-     * Store a newly created member.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'first_name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'last_name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'birth_date' => [
-                'required',
-                'date',
-            ],
-
-            'NBvV_number' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'member_type_id' => [
-                'required',
-                'exists:member_types,id',
-            ],
-
-            'is_active' => [
-                'required',
-                'boolean',
-            ],
-
-            // Address
-            'street' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'house_number' => [
-                'required',
-                'string',
-                'max:20',
-            ],
-
-            'postal_code' => [
-                'required',
-                'string',
-                'max:20',
-            ],
-
-            'city' => [
-                'required',
-                'string',
-                'max:255',
-            ],
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'birth_date' => 'required|date',
+            'nbvv_number' => 'nullable|string|max:255',
+            'member_type_id' => 'required|exists:member_types,id',
+            'is_active' => 'required|boolean',
+            'street' => 'required|string|max:255',
+            'house_number' => 'required|string|max:20',
+            'postal_code' => 'required|string|max:20',
+            'city' => 'required|string|max:255',
         ]);
 
         DB::transaction(function () use ($validated) {
-
-            $Addresses = Addresses::create([
+            $address = Address::create([
                 'street' => $validated['street'],
                 'house_number' => $validated['house_number'],
                 'postal_code' => $validated['postal_code'],
                 'city' => $validated['city'],
             ]);
 
-            Members::create([
+            Member::create([
                 'member_type_id' => $validated['member_type_id'],
-                'address_id' => $Addresses->id,
+                'address_id' => $address->id,
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
                 'birth_date' => $validated['birth_date'],
-                'NBvV_number' => $validated['NBvV_number'] ?? null,
+                'nbvv_number' => $validated['nbvv_number'] ?? null,
                 'is_active' => $validated['is_active'],
             ]);
         });
 
-        return redirect()
-            ->route('members.index')
-            ->with('success', 'Lid is succesvol toegevoegd.');
+        return redirect()->route('members.index')->with('success', 'Lid is succesvol toegevoegd.');
     }
 
-    /**
-     * Display a specific member.
-     */
-    public function show(Members $member)
+    public function show(Member $member)
     {
-        $member->load([
-            'memberTypes',
-            'Addresses',
-            'breedingNumbers',
-        ]);
-
+        $member->load(['memberType', 'address', 'breedingNumbers']);
         return view('members.show', compact('member'));
     }
 
-    /**
-     * Show the form for editing a member.
-     */
-    public function edit(Members $member)
+    public function edit(Member $member)
     {
-        $memberTypes = member_types::orderBy('name')->get();
-
-        $member->load([
-            'memberTypes',
-            'Addresses',
-            'breedingNumbers',
-        ]);
-
-        return view('members.edit', compact(
-            'member',
-            'memberTypes'
-        ));
+        $memberTypes = MemberType::orderBy('name')->get();
+        $member->load(['memberType', 'address', 'breedingNumbers']);
+        return view('members.edit', compact('member', 'memberTypes'));
     }
 
-    /**
-     * Update a member.
-     */
-    public function update(Request $request, Members $member)
+    public function update(Request $request, Member $member)
     {
         $validated = $request->validate([
-            'first_name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'last_name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'birth_date' => [
-                'required',
-                'date',
-            ],
-
-            'NBvV_number' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'member_type_id' => [
-                'required',
-                'exists:member_types,id',
-            ],
-
-            'is_active' => [
-                'required',
-                'boolean',
-            ],
-
-            // Address
-            'street' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'house_number' => [
-                'required',
-                'string',
-                'max:20',
-            ],
-
-            'postal_code' => [
-                'required',
-                'string',
-                'max:20',
-            ],
-
-            'city' => [
-                'required',
-                'string',
-                'max:255',
-            ],
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'birth_date' => 'required|date',
+            'nbvv_number' => 'nullable|string|max:255',
+            'member_type_id' => 'required|exists:member_types,id',
+            'is_active' => 'required|boolean',
+            'street' => 'required|string|max:255',
+            'house_number' => 'required|string|max:20',
+            'postal_code' => 'required|string|max:20',
+            'city' => 'required|string|max:255',
         ]);
 
         DB::transaction(function () use ($validated, $member) {
-
             $member->update([
                 'member_type_id' => $validated['member_type_id'],
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
                 'birth_date' => $validated['birth_date'],
-                'NBvV_number' => $validated['NBvV_number'] ?? null,
+                'nbvv_number' => $validated['nbvv_number'] ?? null,
                 'is_active' => $validated['is_active'],
             ]);
 
-            $member->Addresses->update([
+            $member->address->update([
                 'street' => $validated['street'],
                 'house_number' => $validated['house_number'],
                 'postal_code' => $validated['postal_code'],
@@ -291,20 +131,12 @@ class MembersController extends Controller
             ]);
         });
 
-        return redirect()
-            ->route('members.show', $member)
-            ->with('success', 'Lid is succesvol bijgewerkt.');
+        return redirect()->route('members.show', $member)->with('success', 'Lid is succesvol bijgewerkt.');
     }
 
-    /**
-     * Soft-delete a member.
-     */
-    public function destroy(Members $member)
+    public function destroy(Member $member)
     {
         $member->delete();
-
-        return redirect()
-            ->route('members.index')
-            ->with('success', 'Lid is succesvol verwijderd.');
+        return redirect()->route('members.index')->with('success', 'Lid is succesvol verwijderd.');
     }
 }
