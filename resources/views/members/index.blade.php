@@ -28,7 +28,7 @@
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                         @foreach($members as $member)
                             <tr class="bg-white dark:bg-gray-800">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $member->name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $member->first_name . " " . $member->last_name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $member->email }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $member->memberType->name ?? 'Geen type' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">

@@ -13,17 +13,17 @@ class membertypesseeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('addresses')->insert([
+        DB::table('member_types')->insert([
             'name' => "volwassen lid",
             'description' => "een lid wie ouder is dan 18",
             'price' => 3600
         ]);
-        DB::table('addresses')->insert([
+        DB::table('member_types')->insert([
             'name' => "jeugdlid",
             'description' => "een lid wie jonger dan 18 is",
             'price' => 1800
         ]);
-        DB::table('addresses')->insert([
+        DB::table('member_types')->insert([
             'name' => "gastlid",
             'description' => "een lid van de vereniging die geen NBvV-lid is, en dus geen kweeknummer heeft",
             'price' => 1800

@@ -13,8 +13,8 @@ class memberseeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('cellen')->insert([
-            '' => $,
-        ]);
+        // DB::table('cellen')->insert([
+        //     '' => $,
+        // ]);
     }
 }
