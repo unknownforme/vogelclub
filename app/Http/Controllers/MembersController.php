@@ -50,13 +50,13 @@ class MembersController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+                $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:members,email',
             'birth_date' => 'required|date',
             'nbvv_number' => 'nullable|string|max:255',
             'member_type_id' => 'required|exists:member_types,id',
-            'is_active' => 'required|boolean',
             'street' => 'required|string|max:255',
             'house_number' => 'required|string|max:20',
             'postal_code' => 'required|string|max:20',
@@ -64,6 +64,8 @@ class MembersController extends Controller
         ]);
 
         DB::transaction(function () use ($validated) {
+            $memberType = MemberType::findOrFail($validated['member_type_id']);
+            
             $address = Address::create([
                 'street' => $validated['street'],
                 'house_number' => $validated['house_number'],
@@ -76,13 +78,15 @@ class MembersController extends Controller
                 'address_id' => $address->id,
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
+                'email' => $validated['email'],
                 'birth_date' => $validated['birth_date'],
                 'nbvv_number' => $validated['nbvv_number'] ?? null,
-                'is_active' => $validated['is_active'],
+                'is_active' => false, // Force inactive for public registration
+                'price' => $memberType->price,
             ]);
         });
 
-        return redirect()->route('members.index')->with('success', 'Lid is succesvol toegevoegd.');
+        return redirect()->route('home')->with('success', 'Lid is succesvol toegevoegd.');
     }
 
     public function show(Member $member)
@@ -90,6 +94,14 @@ class MembersController extends Controller
         $member->load(['memberType', 'address', 'breedingNumbers']);
         return view('members.show', compact('member'));
     }
+
+    public function approve(Member $member)
+    {
+        $member->update(['is_active' => true]);
+
+        return redirect()->route('members.index')->with('success', 'Lid is goedgekeurd.');
+    }
+
 
     public function edit(Member $member)
     {
@@ -103,24 +115,29 @@ class MembersController extends Controller
         $validated = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:members,email,' . $member->id,
             'birth_date' => 'required|date',
             'nbvv_number' => 'nullable|string|max:255',
             'member_type_id' => 'required|exists:member_types,id',
-            'is_active' => 'required|boolean',
             'street' => 'required|string|max:255',
             'house_number' => 'required|string|max:20',
             'postal_code' => 'required|string|max:20',
             'city' => 'required|string|max:255',
+            'is_active' => 'required|boolean',
         ]);
 
         DB::transaction(function () use ($validated, $member) {
+            $memberType = MemberType::findOrFail($validated['member_type_id']);
+
             $member->update([
                 'member_type_id' => $validated['member_type_id'],
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
+                'email' => $validated['email'],
                 'birth_date' => $validated['birth_date'],
                 'nbvv_number' => $validated['nbvv_number'] ?? null,
                 'is_active' => $validated['is_active'],
+                'price' => $memberType->price,
             ]);
 
             $member->address->update([
@@ -138,5 +155,27 @@ class MembersController extends Controller
     {
         $member->delete();
         return redirect()->route('members.index')->with('success', 'Lid is succesvol verwijderd.');
+    }
+
+    public function cancelForm()
+    {
+        return view('members.cancel');
+    }
+
+    public function cancel(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $member = Member::where('email', $validated['email'])->first();
+
+        if (!$member) {
+            return redirect()->route('members.cancel_form')->with('error', 'Geen lid gevonden met dit e-mailadres.');
+        }
+
+        $member->update(['cancellation_requested' => true]);
+
+        return redirect()->route('home')->with('success', 'Uw verzoek tot annulering is ontvangen. De secretaris zal dit verwerken.');
     }
 }

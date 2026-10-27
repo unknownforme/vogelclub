@@ -11,7 +11,7 @@ class MemberType extends Model
 
     protected $table = 'member_types';
 
-    protected $fillable = ['name', 'price', 'announced_price'];
+    protected $fillable = ['name', 'description', 'price', 'announced_price'];
 
     public function members()
     {

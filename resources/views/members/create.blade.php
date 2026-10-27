@@ -1,4 +1,3 @@
-
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -30,6 +29,11 @@
                             </div>
 
                             <div>
+                                <x-input-label for="email" :value="__('Email')" />
+                                <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" required />
+                            </div>
+
+                            <div>
                                 <x-input-label for="birth_date" :value="__('Geboortedatum')" />
                                 <x-text-input id="birth_date" name="birth_date" type="date" class="mt-1 block w-full" required />
                             </div>
@@ -44,16 +48,8 @@
                                 <select id="member_type_id" name="member_type_id" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full" required>
                                     <option value="" disabled selected>Selecteer een lidsoort</option>
                                     @foreach($memberTypes as $type)
-                                        <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                        <option value="{{ $type->id }}">{{ $type->name }} - €{{ number_format($type->price / 100, 2, ',', '.') }}</option>
                                     @endforeach
-                                </select>
-                            </div>
-
-                            <div>
-                                <x-input-label for="is_active" :value="__('Status')" />
-                                <select id="is_active" name="is_active" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:focus-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full" required>
-                                    <option value="1">Actief</option>
-                                    <option value="0">Inactief</option>
                                 </select>
                             </div>
 
@@ -62,7 +58,7 @@
                                 <h3 class="text-lg font-medium">Adresgegevens</h3>
                             </div>
 
-                            <div class="col-span-1 md:col-span-2">
+                            <div>
                                 <x-input-label for="street" :value="__('Straat')" />
                                 <x-text-input id="street" name="street" type="text" class="mt-1 block w-full" required />
                             </div>

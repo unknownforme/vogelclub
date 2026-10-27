@@ -22,6 +22,7 @@ class MemberTypesController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'description' => 'required|string|max:1000',
             'price' => 'required|numeric',
             'announced_price' => 'nullable|numeric',
         ]);
@@ -45,6 +46,7 @@ class MemberTypesController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'description' => 'required|string|max:1000',
             'price' => 'required|numeric',
             'announced_price' => 'nullable|numeric',
         ]);

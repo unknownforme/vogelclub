@@ -1,4 +1,3 @@
-
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -20,31 +19,37 @@
                                 <h3 class="text-lg font-medium">Persoonlijke Gegevens</h3>
                             </div>
                             
-                            <div class="col-span-1 md:col-span-2">
+                            <div>
                                 <x-input-label for="first_name" :value="__('Voornaam')" />
                                 <x-text-input id="first_name" name="first_name" type="text" value="{{ old('first_name', $member->first_name) }}" class="mt-1 block w-full" required />
                                 @error('first_name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="col-span-1 md:col-span-2">
+                            <div>
                                 <x-input-label for="last_name" :value="__('Achternaam')" />
                                 <x-text-input id="last_name" name="last_name" type="text" value="{{ old('last_name', $member->last_name) }}" class="mt-1 block w-full" required />
                                 @error('last_name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="col-span-1 md:col-span-2">
+                            <div>
+                                <x-input-label for="email" :value="__('Email')" />
+                                <x-text-input id="email" name="email" type="email" value="{{ old('email', $member->email) }}" class="mt-1 block w-full" required />
+                                @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <div>
                                 <x-input-label for="birth_date" :value="__('Geboortedatum')" />
                                 <x-text-input id="birth_date" name="birth_date" type="date" value="{{ old('birth_date', $member->birth_date) }}" class="mt-1 block w-full" required />
                                 @error('birth_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="col-span-1 md:col-span-2">
+                            <div>
                                 <x-input-label for="nbvv_number" :value="__('NBvV Nummer')" />
                                 <x-text-input id="nbvv_number" name="nbvv_number" type="text" value="{{ old('nbvv_number', $member->nbvv_number) }}" class="mt-1 block w-full" />
                                 @error('nbvv_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="col-span-1 md:col-span-2">
+                            <div>
                                 <x-input-label for="member_type_id" :value="__('Lidsoort')" />
                                 <select id="member_type_id" name="member_type_id" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full" required>
                                     @foreach($memberTypes as $type)
@@ -54,7 +59,7 @@
                                 @error('member_type_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="col-span-1 md:col-span-2">
+                            <div>
                                 <x-input-label for="is_active" :value="__('Status')" />
                                 <select id="is_active" name="is_active" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full" required>
                                     <option value="1" {{ old('is_active', $member->is_active) == 1 ? 'selected' : '' }}>Actief</option>
@@ -68,25 +73,25 @@
                                 <h3 class="text-lg font-medium">Adresgegevens</h3>
                             </div>
 
-                            <div class="col-span-1 md:col-span-2">
+                            <div>
                                 <x-input-label for="street" :value="__('Straat')" />
                                 <x-text-input id="street" name="street" type="text" value="{{ old('street', $member->address->street) }}" class="mt-1 block w-full" required />
                                 @error('street') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="col-span-1 md:col-span-2">
+                            <div>
                                 <x-input-label for="house_number" :value="__('Huisnummer')" />
                                 <x-text-input id="house_number" name="house_number" type="text" value="{{ old('house_number', $member->address->house_number) }}" class="mt-1 block w-full" required />
                                 @error('house_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="col-span-1 md:col-span-2">
+                            <div>
                                 <x-input-label for="postal_code" :value="__('Postcode')" />
                                 <x-text-input id="postal_code" name="postal_code" type="text" value="{{ old('postal_code', $member->address->postal_code) }}" class="mt-1 block w-full" required />
                                 @error('postal_code') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
-                            <div class="col-span-1 md:col-span-2">
+                            <div>
                                 <x-input-label for="city" :value="__('Stad')" />
                                 <x-text-input id="city" name="city" type="text" value="{{ old('city', $member->address->city) }}" class="mt-1 block w-full" required />
                                 @error('city') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror

@@ -29,11 +29,11 @@
                         <x-nav-link :href="route('invoices.index')" :active="request()->routeIs('invoices.*')">
                             {{ __('Facturen') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-nav-link>
                     @endisset
 
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
                     
                     @if(null === Auth::user())
                         <x-nav-link :href="route('login')" :active="request()->routeIs('login')">
