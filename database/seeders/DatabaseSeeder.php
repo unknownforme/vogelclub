@@ -15,9 +15,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
         $this->call(addressseeder::class);
         $this->call(membertypesseeder::class);
+        
+        // Seed the new data
+        $this->call(memberseeder::class);
+        $this->call(InvoiceSeeder::class);
+        $this->call(BreedingNumberSeeder::class);
+
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
