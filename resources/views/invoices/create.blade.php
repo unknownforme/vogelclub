@@ -1,11 +1,5 @@
 
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Nieuwe Factuur Toevoegen') }}
-        </h2>
-    </x-slot>
-
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
@@ -33,6 +27,14 @@
                             <x-input-label for="description" :value="__('Omschrijving')" />
                             <x-text-input id="description" name="description" type="text" class="mt-1 block w-full" required />
                             <x-input-error :messages="$errors->get('description')" class="mt-2" />
+                        </div>
+                        <div class="col-span-1 md:col-span-2">
+                            <x-input-label for="status" :value="__('Status')" />
+                            <select id="status" name="status" class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full">
+                                <option value="unpaid" {{ old('status') == 'unpaid' ? 'selected' : '' }}>Nog te betalen</option>
+                                <option value="paid" {{ old('status') == 'paid' ? 'selected' : '' }}>Betaald</option>
+                            </select>
+                            <x-input-error :messages="$errors->get('status')" class="mt-2" />
                         </div>
                     </div>
 

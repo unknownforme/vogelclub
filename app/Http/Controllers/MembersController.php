@@ -36,7 +36,19 @@ class MembersController extends Controller
             });
         }
 
-        $members = $query->orderBy('last_name')->orderBy('first_name')->paginate(20)->withQueryString();
+        if ($request->filled('sort')) {
+            $sort = $request->input('sort');
+            $direction = $request->input('direction', 'asc');
+            $allowedSorts = ['last_name', 'first_name', 'email', 'is_active'];
+            if (in_array($sort, $allowedSorts)) {
+                $query->orderBy($sort, $direction);
+            } else {
+                $query->orderBy('last_name')->orderBy('first_name');
+            }
+        } else {
+            $query->orderBy('last_name')->orderBy('first_name');
+        }
+        $members = $query->paginate(20)->withQueryString();
         $memberTypes = MemberType::orderBy('name')->get();
 
         return view('members.index', compact('members', 'memberTypes'));

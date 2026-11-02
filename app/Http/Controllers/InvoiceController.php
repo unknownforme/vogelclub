@@ -8,9 +8,30 @@ use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $invoices = Invoice::with('member')->latest()->paginate(20);
+        $query = Invoice::with('member');
+
+        // Filtering
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        // Sorting
+        if ($request->filled('sort')) {
+            $sort = $request->input('sort');
+            $direction = $request->input('direction', 'asc');
+            $allowedSorts = ['amount', 'description', 'status'];
+            if (in_array($sort, $allowedSorts)) {
+                $query->orderBy($sort, $direction);
+            } else {
+                $query->latest();
+            }
+        } else {
+            $query->latest();
+        }
+
+        $invoices = $query->paginate(20)->withQueryString();
         return view('invoices.index', compact('invoices'));
     }
 
@@ -26,6 +47,7 @@ class InvoiceController extends Controller
             'member_id' => 'required|exists:members,id',
             'amount' => 'required|numeric',
             'description' => 'required|string|max:255',
+            'status' => 'required|string|max:50',
         ]);
 
         Invoice::create($validated);
@@ -51,6 +73,7 @@ class InvoiceController extends Controller
             'member_id' => 'required|exists:members,id',
             'amount' => 'required|numeric',
             'description' => 'required|string|max:255',
+            'status' => 'required|string|max:50',
         ]);
 
         $invoice->update($validated);

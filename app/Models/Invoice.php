@@ -13,6 +13,7 @@ class Invoice extends Model
         'member_id',
         'amount',
         'description',
+        'status',
     ];
 
     public function member()
